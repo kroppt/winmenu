@@ -233,6 +233,11 @@ type MenuItemInfo struct {
 	hbmpItem HBitmap
 }
 
+// NewMenuItemInfo returns a pointer to a new MenuItemInfo struct.
+func NewMenuItemInfo() *MenuItemInfo {
+	return new(MenuItemInfo)
+}
+
 // CreateMenu creates a menu.
 // (https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-createmenu)
 func CreateMenu() (hMenu HMenu, ok bool) {
