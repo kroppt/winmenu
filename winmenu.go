@@ -6,9 +6,12 @@ import (
 )
 
 var (
-	moduser32          = syscall.NewLazyDLL("user32.dll")
-	procCreateMenu     = moduser32.NewProc("CreateMenu")
-	procInsertMenuItem = moduser32.NewProc("InsertMenuItemW")
+	moduser32           = syscall.NewLazyDLL("user32.dll")
+	procCreateMenu      = moduser32.NewProc("CreateMenu")
+	procInsertMenuItem  = moduser32.NewProc("InsertMenuItemW")
+	procGetMenu         = moduser32.NewProc("GetMenu")
+	procSetMenu         = moduser32.NewProc("SetMenu")
+	procCreatePopupMenu = moduser32.NewProc("CreatePopupMenu")
 )
 
 // HMenu is a handle to a menu.
@@ -355,6 +358,30 @@ func (mii *MenuItemInfo) SetRightOrder() {
 func CreateMenu() (hMenu HMenu, ok bool) {
 	ret, _, _ := procCreateMenu.Call()
 	return HMenu(ret), ret != 0
+}
+
+// GetMenu returns the menu bar handle for the given window handle.
+func GetMenu(hwnd unsafe.Pointer) (hmenu HMenu, ok bool) {
+	ret, _, _ := procGetMenu.Call(uintptr(hwnd))
+	if ret == 0 {
+		return 0, false
+	}
+	return HMenu(ret), true
+}
+
+// SetMenu assigns a new menu to the specified window.
+func SetMenu(hwnd unsafe.Pointer, hmenu HMenu) (ok bool) {
+	ret, _, _ := procSetMenu.Call(uintptr(hwnd), uintptr(hmenu))
+	return ret != 0
+}
+
+// CreatePopupMenu creates a drop-down menu, submenu, or shortcut menu.
+func CreatePopupMenu() (hmenu HMenu, ok bool) {
+	ret, _, _ := procCreatePopupMenu.Call()
+	if ret == 0 {
+		return 0, false
+	}
+	return HMenu(ret), true
 }
 
 // InsertMenuItem inserts a new menu item at the specified position in a menu.
