@@ -78,6 +78,9 @@ const (
 	// Displays selected menu items using a radio-button mark instead of a check
 	// mark if the hbmpChecked member is nil.
 	MFT_RADIOCHECK TypeFlag = 0x00000200
+	// Right-justifies the menu item and any subsequent items. This value is
+	// valid only if the menu item is in a menu bar.
+	MFT_RIGHTJUSTIFY TypeFlag = 0x00004000
 	// Specifies that menus cascade right-to-left (the default is left-to-
 	// right). This is used to support right-to-left languages, such as Arabic
 	// and Hebrew.
