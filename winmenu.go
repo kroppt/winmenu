@@ -241,6 +241,115 @@ func NewMenuItemInfo() *MenuItemInfo {
 	return new(MenuItemInfo)
 }
 
+// SetAsString sets the masks and sets the string field to the given string.
+func (mii *MenuItemInfo) SetAsString(str string) (ok bool) {
+	if mii.fType&MFT_BITMAP == MFT_BITMAP || mii.fType&MFT_SEPARATOR == MFT_SEPARATOR {
+		return false
+	}
+	mii.fMask |= MIIM_STRING | MIIM_FTYPE
+	mii.fType |= MFT_STRING
+	mii.dwTypeData = syscall.StringToUTF16Ptr(str)
+	return true
+}
+
+// SetAsBitmap sets the masks and sets the handle to the given bitmap handle.
+func (mii *MenuItemInfo) SetAsBitmap(hbm HBitmap) (ok bool) {
+	if mii.fType&MFT_STRING == MFT_STRING || mii.fType&MFT_SEPARATOR == MFT_SEPARATOR {
+		return false
+	}
+	mii.fMask |= MIIM_BITMAP | MIIM_FTYPE
+	mii.fType |= MFT_BITMAP
+	mii.hbmpItem = hbm
+	return true
+}
+
+// SetAsSeparator sets the masks to be a separator.
+func (mii *MenuItemInfo) SetAsSeparator() (ok bool) {
+	if mii.fType&MFT_STRING == MFT_STRING || mii.fType&MFT_BITMAP == MFT_BITMAP {
+		return false
+	}
+	mii.fMask |= MIIM_FTYPE
+	mii.fType |= MFT_SEPARATOR
+	return true
+}
+
+// SetItemData sets the masks and sets item data field to the given pointer.
+func (mii *MenuItemInfo) SetItemData(data *uint64) {
+	mii.fMask |= MIIM_DATA
+	mii.dwItemData = data
+}
+
+// SetID sets the masks and sets the ID field to the given ID.
+func (mii *MenuItemInfo) SetID(id uint32) {
+	mii.fMask |= MIIM_ID
+	mii.wID = id
+}
+
+// SetSubMenu sets the masks and sets the submenu handle to the given handle.
+func (mii *MenuItemInfo) SetSubMenu(hmenu HMenu) {
+	mii.fMask |= MIIM_SUBMENU
+	mii.hSubMenu = hmenu
+}
+
+// EnableCheckmarks enables checkmarks.
+func (mii *MenuItemInfo) EnableCheckmarks() {
+	mii.fMask |= MIIM_CHECKMARKS
+}
+
+// SetCheckmark sets the checked bitmap handle to the given handle.
+// This will enable checkmarks.
+func (mii *MenuItemInfo) SetCheckmark(hbm HBitmap) {
+	mii.EnableCheckmarks()
+	mii.hbmpChecked = hbm
+}
+
+// SetUncheckmark unchecked bitmap handle to the given handle.
+// This will enable checkmarks.
+func (mii *MenuItemInfo) SetUncheckmark(hbm HBitmap) {
+	mii.EnableCheckmarks()
+	mii.hbmpUnchecked = hbm
+}
+
+// ClearFlags zeroes the mask, type, and state flags.
+func (mii *MenuItemInfo) ClearFlags() {
+	mii.fMask = 0
+	mii.fType = 0
+	mii.fState = 0
+}
+
+// SetState sets the masks and sets the state to the given flag.
+func (mii *MenuItemInfo) SetState(fstate StateFlag) {
+	mii.fMask |= MIIM_STATE
+	mii.fState = fstate
+}
+
+// SetMenuBarBreak sets the masks to enable menu bar break.
+func (mii *MenuItemInfo) SetMenuBarBreak() {
+	mii.fType |= MFT_MENUBARBREAK
+}
+
+// SetMenuBreak sets the masks to enable menu bar break.
+func (mii *MenuItemInfo) SetMenuBreak() {
+	mii.fType |= MFT_MENUBREAK
+}
+
+// SetRadioCheck sets the masks to enable radio checkmarks and zeroes out the
+// checked bitmap handle.
+func (mii *MenuItemInfo) SetRadioCheck() {
+	mii.fType |= MFT_RADIOCHECK
+	mii.hbmpChecked = 0
+}
+
+// SetRightJustified sets the masks for right-justifying the menu item.
+func (mii *MenuItemInfo) SetRightJustified() {
+	mii.fType |= MFT_RIGHTJUSTIFY
+}
+
+// SetRightOrder sets the masks for right-to-left language support.
+func (mii *MenuItemInfo) SetRightOrder() {
+	mii.fType |= MFT_RIGHTORDER
+}
+
 // CreateMenu creates a menu.
 // (https://docs.microsoft.com/en-us/windows/desktop/api/Winuser/nf-winuser-createmenu)
 func CreateMenu() (hMenu HMenu, ok bool) {
